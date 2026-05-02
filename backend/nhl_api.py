@@ -1,5 +1,7 @@
 import requests
 
+from database import create_tables, get_connection
+
 BASE_URL = "https://api-web.nhle.com/v1"
 
 
@@ -10,22 +12,44 @@ def get_today_scores():
     return response.json()
 
 
-def print_today_games():
+def save_games_to_db(data):
+    create_tables()
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    for game in data.get("games", []):
+        game_id = game["id"]
+        season = game.get("season")
+        game_date = game.get("gameDate")
+        game_type = game.get("gameType")
+        home_team = game["homeTeam"]["abbrev"]
+        away_team = game["awayTeam"]["abbrev"]
+        home_score = game["homeTeam"].get("score")
+        away_score = game["awayTeam"].get("score")
+        game_state = game.get("gameState")
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO games (
+                id, season, game_date, game_type,
+                home_team, away_team,
+                home_score, away_score, game_state
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            game_id, season, game_date, game_type,
+            home_team, away_team, home_score, away_score, game_state
+        ))
+
+    conn.commit()
+    conn.close()
+
+
+def main():
     data = get_today_scores()
-
-    games = data.get("games", [])
-
-    if not games:
-        print("No NHL games found today.")
-        return
-
-    for game in games:
-        away = game["awayTeam"]["abbrev"]
-        home = game["homeTeam"]["abbrev"]
-        state = game.get("gameState", "Unknown")
-
-        print(f"{away} at {home} - {state}")
+    save_games_to_db(data)
+    print("Today's games saved to database.")
 
 
 if __name__ == "__main__":
-    print_today_games()
+    main()
