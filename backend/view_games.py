@@ -6,7 +6,7 @@ def view_games():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id, game_date, away_team, away_score, home_team, home_score, game_state
+        SELECT id, game_date, away_team, away_score, home_team, home_score, game_state, winner
         FROM games
         ORDER BY game_date DESC
     """)
@@ -19,8 +19,8 @@ def view_games():
         return
 
     for game in games:
-        game_id, date, away, away_score, home, home_score, state = game
-        print(f"{date} | {away} {away_score} @ {home} {home_score} | {state} | ID: {game_id}")
+        game_id, date, away, away_score, home, home_score, state, winner = game
+        print(f"{date} | {away} {away_score} @ {home} {home_score} | {state} | Winner: {winner} | ID: {game_id}")
 
 
 if __name__ == "__main__":

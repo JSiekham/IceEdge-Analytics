@@ -23,7 +23,9 @@ def create_tables():
             away_team TEXT,
             home_score INTEGER,
             away_score INTEGER,
-            game_state TEXT
+            game_state TEXT,
+            home_win INTEGER,
+            winner TEXT
         )
     """)
 

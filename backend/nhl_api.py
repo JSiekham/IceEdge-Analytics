@@ -28,6 +28,9 @@ def save_games_to_db(games):
     cursor = conn.cursor()
 
     for game in games:
+        if game.get("gameState") != "OFF":
+            continue
+
         game_id = game["id"]
         season = game.get("season")
         game_date = game.get("gameDate")
@@ -38,16 +41,25 @@ def save_games_to_db(games):
         away_score = game["awayTeam"].get("score")
         game_state = game.get("gameState")
 
+        if home_score is None or away_score is None:
+            continue
+
+        home_win = 1 if home_score > away_score else 0
+        winner = home_team if home_win == 1 else away_team
+
         cursor.execute("""
             INSERT OR REPLACE INTO games (
                 id, season, game_date, game_type,
                 home_team, away_team,
-                home_score, away_score, game_state
+                home_score, away_score, game_state,
+                home_win, winner
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             game_id, season, game_date, game_type,
-            home_team, away_team, home_score, away_score, game_state
+            home_team, away_team,
+            home_score, away_score, game_state,
+            home_win, winner
         ))
 
     conn.commit()
