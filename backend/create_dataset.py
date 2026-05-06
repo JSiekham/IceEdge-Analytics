@@ -2,7 +2,7 @@
 create_dataset.py
 
 Loads completed NHL games from the database and turns them into
-a dataset we can use for machine learning.
+a dataset used for machine learning.
 """
 
 import pandas as pd
@@ -43,11 +43,11 @@ def load_games():
 
 def main():
     """
-    Quick check to make sure our dataset looks right.
+    Quick check to make sure dataset looks right.
     """
     df = load_games()
 
-    # Show a few rows so we can sanity check the data
+    # Show a few rows to sanity check the data
     print("Preview of dataset:")
     print(df.head())
     print()

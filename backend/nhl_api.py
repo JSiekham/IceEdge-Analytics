@@ -12,7 +12,7 @@ from database import create_tables, get_connection
 # Base URL for NHL API
 BASE_URL = "https://api-web.nhle.com/v1"
 
-# List of teams we want to pull data for (can expand later)
+# List of teams wanted want to pull data for (can expand later)
 TEAMS = [
     "VAN", "EDM", "TOR", "BOS", "COL",
     "VGK", "NYR", "LAK", "DAL", "CAR"
@@ -56,7 +56,7 @@ def save_games_to_db(games):
     """
     Save a list of games into the database.
 
-    Only completed games are stored, since those are what we need for ML.
+    Only completed games are stored, since those are what are needed for ML.
     """
     # Make sure tables exist before inserting
     create_tables()

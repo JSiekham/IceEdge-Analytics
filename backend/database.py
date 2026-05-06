@@ -29,12 +29,12 @@ def create_tables():
     """
     Creates the main 'games' table if it doesn't already exist.
 
-    This table stores all game-level data we pull from the NHL API.
+    This table stores all game-level data pulled from the NHL API.
     """
     conn = get_connection()
     cursor = conn.cursor()
 
-    # This is our main table for storing game results
+    # This is the main table for storing game results
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS games (
             id INTEGER PRIMARY KEY,
