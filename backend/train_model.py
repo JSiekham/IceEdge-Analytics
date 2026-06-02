@@ -1,12 +1,13 @@
 """
 train_model.py
 
-Trains a basic machine learning model to predict whether the home team wins.
+Trains a machine learning model to predict whether the home team wins.
+This version uses a time-based train/test split, which is more realistic
+for sports prediction.
 """
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
-from sklearn.model_selection import train_test_split
 
 from create_dataset import load_games
 from features import add_basic_features, add_rolling_features
@@ -14,15 +15,17 @@ from features import add_basic_features, add_rolling_features
 
 def train_model():
     """
-    Load games, create features, train a model, and print results.
+    Load games, create features, train the model, and print evaluation results.
     """
     df = load_games()
 
-    # Add our feature columns
+    # Make sure games are sorted by date before splitting
+    df = df.sort_values("game_date")
+
+    # Add feature columns
     df = add_basic_features(df)
     df = add_rolling_features(df)
 
-    # These are the columns the model will learn from
     feature_columns = [
         "home_last5_win_rate",
         "away_last5_win_rate",
@@ -33,13 +36,15 @@ def train_model():
     X = df[feature_columns]
     y = df["home_win"]
 
-    # Split data into training and testing sets
-    # random_state makes the results repeatable
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=42
-    )
+    # Use the first 75% of games for training and the last 25% for testing
+    split_index = int(len(df) * 0.75)
 
-    # Random Forest is a good starter model because it handles small datasets well
+    X_train = X.iloc[:split_index]
+    X_test = X.iloc[split_index:]
+
+    y_train = y.iloc[:split_index]
+    y_test = y.iloc[split_index:]
+
     model = RandomForestClassifier(
         n_estimators=100,
         random_state=42
@@ -47,7 +52,6 @@ def train_model():
 
     model.fit(X_train, y_train)
 
-    # Predict on games the model has not seen during training
     predictions = model.predict(X_test)
 
     print("Model accuracy:", accuracy_score(y_test, predictions))
