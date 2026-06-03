@@ -6,12 +6,15 @@ This version uses a time-based train/test split, which is more realistic
 for sports prediction.
 """
 
+import joblib
+from pathlib import Path
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 
 from create_dataset import load_games
 from features import add_basic_features, add_rolling_features
 
+MODEL_PATH = Path(__file__).parent.parent / "models" / "home_win_model.pkl"
 
 def train_model():
     """
@@ -51,6 +54,11 @@ def train_model():
     )
 
     model.fit(X_train, y_train)
+
+    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(model, MODEL_PATH)
+
+    print(f"Model saved to {MODEL_PATH}")
 
     predictions = model.predict(X_test)
 
